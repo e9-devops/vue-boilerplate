@@ -2,7 +2,7 @@
     <div class="form-group">
         <component :is="component" :options="options" :value="value" @updateValue="sendValue"
                    :display-mode="$parent.displayMode" :property="property"></component>
-        <p class="validation-message" v-if="property && invalid && $parent.displayMode !== 'VIEW'">{{ validationMessage }}</p>
+        <p class="validation-message" v-if="property && invalid && $parent.displayMode !== 'VIEW'">\{{ validationMessage }}</p>
     </div>
 </template>
 

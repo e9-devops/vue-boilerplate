@@ -19,10 +19,10 @@
                         <div class="image" v-if="props.option._ImageUrl" :style="{'background-image': 'url(' + props.option._ImageUrl + ')'}"></div>
                         <div class="description">
                             <div class="title">
-                                {{ props.option.Name }}
+                                \{{ props.option.Name }}
                             </div>
                             <small class="text-muted" v-if="props.option.Description">
-                                {{ props.option.Description }}
+                                \{{ props.option.Description }}
                             </small>
                         </div>
                     </template>
@@ -42,10 +42,10 @@
                         <div class="image" v-if="props.option._ImageUrl" :style="{'background-image': 'url(' + props.option._ImageUrl + ')'}"></div>
                         <div class="description">
                             <div class="title">
-                                {{ props.option.Name }}
+                                \{{ props.option.Name }}
                             </div>
                             <small class="text-muted" v-if="props.option.Description">
-                                {{ props.option.Description }}
+                                \{{ props.option.Description }}
                             </small>
                         </div>
                     </template>

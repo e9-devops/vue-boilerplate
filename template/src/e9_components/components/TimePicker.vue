@@ -29,7 +29,7 @@
                     <input type="text" @input="handleMinutes($event.target.value)" :value="strMinutes" class="form-control text-center" maxlength="2" min="0" max="59" @keyup.up="incrementMinutes" @keyup.down="decrementMinutes">
                 </td>
                 <td v-show="showMeridian">
-                    <button class="btn btn-primary" @click="toggleMeridian">{{ meridian }}</button>
+                    <button class="btn btn-primary" @click="toggleMeridian">\{{ meridian }}</button>
                 </td>
             </tr>
             <tr>

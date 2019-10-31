@@ -3,7 +3,7 @@
         <div class="container-fluid">
             <div class="nav row">
                 <div class="col-sm-8">
-                    <h3 class="section-title-2 pt24">{{ $route.name }}</h3>
+                    <h3 class="section-title-2 pt24">\{{ $route.name }}</h3>
                 </div>
                 <div class="col-sm-4">
                     <i class="material-icons pull-right">notifications</i>

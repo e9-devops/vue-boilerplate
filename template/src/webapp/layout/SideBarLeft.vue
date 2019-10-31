@@ -7,7 +7,7 @@
                 </div>
                 <div class="info">
                     <h4 class="title">
-                        {{ getUser().Owner.Title }}
+                        \{{ getUser().Owner.Title }}
                     </h4>
                     <h6 class="subtitle">
                         <a href="" class="grey" @click="logout">Logout</a>
@@ -20,12 +20,12 @@
                 <li v-for="(route,key) in $store.state.sideBarModule.menuItems" :key="key" :class="{'flex-wrap': route.subItems}">
                     <router-link v-if="!route.subItems" :to="route.path" active-class="active">
                         <a>
-                            <i class="material-icons">{{ route.icon || 'No icon' }}</i>
+                            <i class="material-icons">\{{ route.icon || 'No icon' }}</i>
                             <span v-text="route.name"></span>
                         </a>
                     </router-link>
                     <a v-else @click="expandNav(route)">
-                        <i class="material-icons">{{ route.icon || 'No icon' }}</i>
+                        <i class="material-icons">\{{ route.icon || 'No icon' }}</i>
                         <span v-text="route.name"></span>
                     </a>
                     <ul class="sub-nav" v-if="route.subItems && route.expanded" :class="{'open': route.expanded}">
