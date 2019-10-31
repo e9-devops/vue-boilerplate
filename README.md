@@ -11,7 +11,7 @@ It is recommended to install the global bridge to make vue cli 3 use the starter
 ``` bash
 $ npm install -g @vue/cli-init
 $ npm install -g vue-cli
-$ vue init e9-devops/vue-boilerplate-flext .
+$ vue init e9-devops/vue-boilerplate .
 $ npm install
 $ npm run dev
 ```
