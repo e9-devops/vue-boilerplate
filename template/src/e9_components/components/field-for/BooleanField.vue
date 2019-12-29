@@ -1,11 +1,11 @@
 <template>
-    <div>
+    <div class="checkbox">
         <label class="control-label" v-text="options.label || property.name"></label>
         <br>
-        <div class="checkbox">
-            <input :class="options.customClass" type="checkbox" :id="options.label || property.name"
+        <div>
+            <input :class="options.customClass" class="check" type="checkbox" :id="options.label || property.name"
                 v-model="clonedValue.value" :disabled="options.disabled || displayMode === 'VIEW'"
-                :onchange="handler" />
+                @change="handler" />
             <label class="check-label" :for="options.label || property.name"></label>
         </div>
     </div>
@@ -45,12 +45,11 @@ export default {
                 this.value !== undefined
                     ? this.value
                     : this.property.value !== undefined ? this.property.value : false;
-        this.options.onChangeEvent = this.options.onChangeEvent || function () {};
     }
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .check {
         display: none;
     }
@@ -108,7 +107,7 @@ export default {
     }
 
     .check + label.check-label {
-        background: @grey;
+        background: $light-grey;
         border-radius: 2em;
         padding: 2px;
         transition: all 0.4s ease;
@@ -121,7 +120,7 @@ export default {
     }
 
     .check:checked + label.check-label {
-        background: @brand-primary;
+        background: $brand-primary;
     }
 
     .check:disabled + label {

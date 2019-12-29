@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import moment from 'moment';
 
-Vue.filter('formatDate', (date, format) => moment(date).format(format));
+Vue.filter('formatDate', (date, format) => {
+    return date ? moment(date).format(format) : '';
+});
 
 Vue.filter('limitTo', (arr, val) => val.slice(0, val));
 
@@ -36,4 +38,11 @@ Vue.filter('formatValue', (value, fraction) => {
         minimumFractionDigits: fraction
     });
     return formatter.format(value);
+});
+
+Vue.filter('propercase', (value) => {
+    if (value.length < 2) {
+        return value;
+    }
+    return value[0].toUpperCase() + value.substring(1).toLowerCase();
 });

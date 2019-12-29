@@ -1,51 +1,47 @@
 <template>
-    <div class="bg-white">
-        <LoaderModal :showloader="loading" message="Adding image file..."></LoaderModal>
-        <v-dialog v-model="show" width="700" persistent data-app>
-            <div class="modal-header">
-                <h3>Upload Picture</h3>
-                <a class="close" @click="close()">
-                    <i class="material-icons">close</i>
-                </a>
+    <b-modal v-model="showCropper" persistent no-close-on-esc no-close-on-backdrop hide-footer data-app size="lg">
+        <button slot="modal-header-close" @click="cancel" class="close">×</button>
+        <template v-slot:modal-title>
+            Upload Image
+        </template>
+        <div class="p24">
+            <div>
+                <h4 class="section-subtitle mt0 mb8">1. Choose File</h4>
+                <input type="file" @change="fileUploaded" accept="image/*" ref="fileUpload" />
             </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-sm-5">
-                        <h3 class="section-title mt0 mb8">Choose File</h3>
-                        <input type="file" @change="fileUploaded" accept="image/*" ref="fileUpload" />
-                    </div>
-                </div>
-                <div v-if="upload.src">
-                    <h3 class="section-title mb0">2. Crop Image</h3>
-                    <cropper classname="cropper" :src="upload.src" :stencil-props="stencilProps" @change="onChange"></cropper>
-                </div>
-                <div v-if="upload.src" class="mt8">
-                    <h3 class="section-title mb0">3. Confirm</h3>
-                    <button class="btn btn-primary btn-filled" :disabled="loading || !isValid" @click="uploadFull">
-                        <i class="material-icons">crop_free</i> <span class="ml16">Upload Uncropped</span>
-                    </button>
-                    <button class="btn btn-secondary btn-filled" :disabled="loading || !isValid" @click="uploadCropped">
-                        <i class="material-icons">crop</i> <span class="ml16">Upload Cropped</span>
-                    </button>
-                </div>
+            <div v-if="upload.src">
+                <h4 class="section-subtitle mb16">2. Crop Image</h4>
+                <cropper classname="cropper" :src="upload.src" :stencil-props="stencilProps" @change="onChange"></cropper>
             </div>
-        </v-dialog>
-    </div>
+            <div v-if="upload.src" class="upload-actions mt16">
+                <h4 class="section-subtitle mb16">3. Confirm</h4>
+                <button class="btn btn-primary btn-icon mr8" :class="{'btn-loader': isLoading}" :disabled="isLoading || !isValid" @click="uploadFull" v-show="chosenOption !== 'Cropped'">
+                    <img v-if="isLoading" src="@/assets/images/loader-white.svg" alt="loader" class="loader">
+                    <i v-else class="material-icons">crop_free</i>
+                    <span class="ml16">Upload Uncropped</span>
+                </button>
+                <button class="btn btn-secondary btn-icon" :class="{'btn-loader': isLoading}" :disabled="isLoading || !isValid" @click="uploadCropped" v-show="chosenOption !== 'Uncropped'">
+                    <img v-if="isLoading" src="@/assets/images/loader-white.svg" alt="loader" class="loader">
+                    <i v-else class="material-icons">crop</i>
+                    <span class="ml16">Upload Cropped</span>
+                </button>
+            </div>
+        </div>
+    </b-modal>
 </template>
 
 <script>
-import {Cropper} from 'vue-advanced-cropper';
-import LoaderModal from '@/webapp/common/modals/LoaderModal.vue';
+import { Cropper } from 'vue-advanced-cropper';
 export default {
     name: 'ImageUpload',
     props: ['show', 'config', 'data'],
     components: {
         Cropper,
-        LoaderModal
     },
     data() {
         return {
-            loading: false,
+            isLoading: false,
+            chosenOption: '',
             upload: {
                 chosen: null,
                 src: null,
@@ -62,11 +58,12 @@ export default {
             options: {
                 minWidth: this.config.minWidth
             },
-            isValid: false
+            isValid: false,
+            showCropper: true
         };
     },
     methods: {
-        callAPI(formData) {
+        callAPI(formData, ) {
             return new Promise(async (resolve, reject) => {
                 let xhr = new XMLHttpRequest();
                 xhr.open('POST', window.endpoint + this.config.api, true);
@@ -83,13 +80,16 @@ export default {
                     }
                 };
                 xhr.onerror = () => {
-                    this.loading = false;
+                    this.isLoading = false;
                 };
                 xhr.send(formData);
             });
         },
-        close(image){
+        close(image) {
             this.$emit('close', image);
+        },
+        cancel() {
+            this.$emit('cancel');
         },
         extractImage() {
             let img = new Image();
@@ -121,18 +121,19 @@ export default {
             this.isValid = false;
             this.extractImage();
         },
-        onChange({coordinates}) {
+        onChange({ coordinates }) {
             this.position = coordinates;
         },
         async uploadFull() {
-            this.loading = true;
+            this.isLoading = true;
+            this.chosenOption = 'Uncropped';
             this.data.name = this.$refs.fileUpload.files[0].name;
             let formData = new window.FormData();
             formData.append('file', this.upload.chosen);
             formData.append('document', JSON.stringify(this.data));
             try {
                 let result = await this.callAPI(formData);
-                this.loading = false;
+                this.isLoading = false;
                 this.close(JSON.parse(result));
                 this.$swal({
                     title: 'Uploaded',
@@ -140,19 +141,22 @@ export default {
                     type: 'success',
                 });
             } catch (err) {
-                this.loading = false;
+                this.chosenOption = '';
                 this.$swal({
                     title: 'Error',
                     text: err && err.data && err.data.message ? err.data.message : 'Some error occurred',
                     type: 'error'
                 });
+                console.error(err);
             }
         },
         async uploadCropped() {
-            this.loading = true;
+            this.isLoading = true;
+            this.chosenOption = 'Cropped';
             this.data.name = this.$refs.fileUpload.files[0].name;
             let formData = new window.FormData();
             formData.append('file', this.upload.chosen);
+            formData.append('document', JSON.stringify(this.data));
             let bodyObj = {
                 ...this.data,
                 cropx: this.position.left,
@@ -160,36 +164,37 @@ export default {
                 cropw: this.position.width,
                 croph: this.position.height
             };
-
-            formData.append('document', JSON.stringify(bodyObj));
+            let t = new URLSearchParams(bodyObj).toString();
+            this.config.api = this.config.api + '&' + t;
             try {
                 let result = await this.callAPI(formData);
-                this.loading = false;
-                this.close(JSON.parse(result));
+                this.isLoading = false;
                 this.$swal({
                     title: 'Uploaded',
                     text: 'Image has been uploaded successfully',
                     type: 'success',
-                    confirmButtonColor: '#ff6500'
+                    confirmButtonColor: this.$store.state.constantModule.colors.brandPrimary
                 });
+                this.close(JSON.parse(result));
             } catch (err) {
-                this.loading = false;
+                this.chosenOption = '';
                 this.$swal({
                     title: 'Error',
                     text: err && err.data && err.data.message ? err.data.message : 'Some error occurred',
                     type: 'error'
                 });
+                console.error(err);
             }
         }
     }
 };
 </script>
 
-<style lang="less" scoped>
-    input[type="file"] {
+<style lang="scss" scoped>
+    input[type='file'] {
         &:before {
             border-radius: 6px !important;
-            padding: 0 16px;
+            padding: 0 12px;
         }
     }
 </style>

@@ -1,3 +1,3 @@
-import './components';
 import './filters';
+import './components';
 import './directives';

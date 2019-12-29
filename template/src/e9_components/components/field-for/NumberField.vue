@@ -13,7 +13,6 @@
                 :max="options.max"
                 v-model="clonedValue.value"
                 @keyup="handler"
-                @input="options.onChangeEvent"
                 class="form-control"
                 :disabled="options.disabled"
             />
@@ -30,7 +29,7 @@ export default {
             type: Object
         },
         value: {
-            type: String
+            type: Number
         },
         displayMode: {
             type: String
@@ -81,7 +80,6 @@ export default {
         this.clonedValue.value = this.value || (this.property ? this.property.value : undefined);
         this.options.min = this.options.min || (this.property ? this.property.min : undefined);
         this.options.max = this.options.max || (this.property ? this.property.max : undefined);
-        this.options.onChangeEvent = this.options.onChangeEvent || function () {};
         this.handler();
     }
 };

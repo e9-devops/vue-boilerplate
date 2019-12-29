@@ -3,9 +3,9 @@
         <label class="control-label" :for="options.label || property.name"
             v-text="options.label || property.name"></label>
         <div v-if="displayMode === 'EDIT' || displayMode === 'CREATE'">
-            <flat-pickr v-model="clonedValue.value" :config="{...config, ...options.calendarConfig, ...property.calendarConfig}" class="form-control datepicker" :placeholder="options.placeholder || 'DD/MM/YYY'" ref="calendar"></flat-pickr>
+            <flat-pickr v-model="formattedValue" :config="{...config, ...options.calendarConfig, ...property.calendarConfig}" class="form-control datepicker" :placeholder="options.placeholder || 'DD/MM/YYY'" ref="calendar"></flat-pickr>
         </div>
-        <p class="form-control-static" v-else-if="displayMode === 'VIEW'" v-text="clonedValue.value"></p>
+        <p class="form-control-static" v-else-if="displayMode === 'VIEW'">\{{ clonedValue.value | formatDate('DD/MM/YYYY') }}</p>
     </div>
 </template>
 
@@ -34,16 +34,15 @@ export default {
         let vm = this;
         return {
             clonedValue: {},
+            formattedValue: null,
             config: {
                 dateFormat: 'd/m/Y',
-                monthSelectorType: 'static',
-                yearSelectorType: 'static',
                 showNonCurrentDates: false,
                 onChange: () => {
                     vm.clonedValue.value = vm.$refs.calendar.fp.selectedDates[0];
                     vm.handler();
                 }
-            }
+            },
         };
     },
     methods: {
@@ -65,7 +64,7 @@ export default {
     },
     created() {
         this.clonedValue.value = this.value || (this.property ? this.property.value : undefined);
-        this.options.onChangeEvent = this.options.onChangeEvent || function () {};
+        this.formattedValue = this.clonedValue.value;
         this.handler();
     }
 };

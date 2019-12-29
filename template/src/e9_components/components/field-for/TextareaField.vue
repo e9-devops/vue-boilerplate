@@ -4,16 +4,14 @@
             v-text="options.label || property.name"></label>
         <div v-if="displayMode === 'CREATE' || displayMode === 'EDIT'">
             <textarea
-                type="textarea"
                 :name="options.label"
                 :class="options.customClass"
                 :required="options.required"
                 :placeholder="options.placeholder"
                 :disabled="options.disabled"
-                :rows="options.rows"
+                :rows="options.rows || (property && property.textarea) || 3"
                 v-model="clonedValue.value"
                 @keyup="handler"
-                @input="options.onChangeEvent"
                 class="form-control"
             ></textarea>
         </div>
@@ -68,9 +66,6 @@ export default {
     },
     created() {
         this.clonedValue.value = this.value || this.property.value;
-        this.options.rows = this.options.rows || this.property.textarea || 3;
-        this.options.onChangeEvent = this.options.onChangeEvent || function () {
-        };
         this.handler();
     }
 };

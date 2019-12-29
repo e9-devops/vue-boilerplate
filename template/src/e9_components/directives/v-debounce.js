@@ -3,9 +3,9 @@ import Vue from 'vue';
 Vue.directive('debounce', {
     bind: (el, bind) => {
         if (bind.value !== bind.oldValue) { // change debounce only if interval has changed
-            el.oninput = debounce(() => {
+            el.oninput = debounce(function () {
                 el.dispatchEvent(createNewEvent('change'));
-            }, parseInt(bind.value) || 800);
+            }, parseInt(bind.value) || 300);
         }
     },
     unbind: (el) => {

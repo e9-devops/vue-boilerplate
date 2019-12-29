@@ -3,8 +3,8 @@
         <label class="control-label" :for="options.label || property.name"
             v-text="options.label || property.name"></label>
         <div v-if="displayMode === 'EDIT' || displayMode === 'CREATE'">
-            <input type="text" :class="options.customClass" :name="options.label" :required="options.required"
-                :placeholder="options.placeholder" v-model="clonedValue.value" @change="options.onChangeEvent"
+            <input type="text" :class="options.customClass" :name="options.label" :required="options.required" autocomplete="off"
+                :placeholder="options.placeholder" v-model="clonedValue.value"
                 @input="handler" class="form-control" :disabled="options.disabled" />
         </div>
         <p class="form-control-static" v-else-if="displayMode === 'VIEW'" v-text="clonedValue.value"></p>
@@ -62,7 +62,6 @@ export default {
     },
     created() {
         this.clonedValue.value = this.value || (this.property ? this.property.value : undefined);
-        this.options.onChangeEvent = this.options.onChangeEvent || function () {};
         this.handler();
     }
 };

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="model">
+    <div v-if="model && data">
         <slot :errors="errors" :invalid="invalid"></slot>
     </div>
 </template>
@@ -7,7 +7,20 @@
 <script>
 export default {
     name: 'SubFormFor',
-    props: ['modelName', 'for', 'displayMode'],
+    props: {
+        modelName: {
+            type: String
+        },
+        data: {
+            type: Object,
+            default: () => {
+                return {};
+            }
+        },
+        displayMode: {
+            type: String
+        }
+    },
     data() {
         return {
             model: null,

@@ -1,19 +1,34 @@
 <template>
     <div>
-        <div class="mb16 back" v-if="rData && rData.Name">
-            <i class="material-icons">arrow_back</i>
-            <h3 class="section-title mb0" v-text="rData.Name"></h3>
+        <div class="row">
+            <div class="col-sm-8">
+                <div v-if="rData && rData.Name">
+                    <Back :text="rData.Name"></Back>
+                </div>
+            </div>
         </div>
-        <b-nav tabs>
-            <b-nav-item v-for="(tab,key) in tabs" :to="tab.path" exact :key="key" exact-active-class="active">
-                \{{ tab.name }}
-            </b-nav-item>
-        </b-nav>
-        <router-view></router-view>
+        <div class="row">
+            <div class="col-sm-8">
+                <b-nav tabs>
+                    <b-nav-item v-for="(tab,key) in tabs" :to="tab.path" :key="key" active-class="active">
+                        {{ tab.name }}
+                    </b-nav-item>
+                </b-nav>
+            </div>
+        </div>
+        <div v-if="rData && !$route.meta.isKeepAlive">
+            <router-view></router-view>
+        </div>
+        <div v-else-if="rData && $route.meta.isKeepAlive">
+            <keep-alive>
+                <router-view></router-view>
+            </keep-alive>
+        </div>
     </div>
 </template>
 
 <script>
+import Back from '@/e9_components/components/Back';
 export default {
     name: 'ModuleItemLayout',
     props: {
@@ -22,10 +37,10 @@ export default {
             required: true
         },
         rData: {
-            type: [Object, Array, String],
             required: true
         }
-    }
+    },
+    components: {Back}
 };
 </script>
 
@@ -38,6 +53,7 @@ export default {
             margin-right: 16px;
             font-size: 32px;
             font-weight: 600;
+            cursor: pointer;
         }
     }
     .nav {
