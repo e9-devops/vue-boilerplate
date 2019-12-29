@@ -1,7 +1,10 @@
 <template>
     <div class="descriptive-card" @click="goToRoute" :class="{'pointer': rNavTo}">
-        <div class="background-image-wrapper" v-if="accessors.LogoUrl" :style="calculateHeight()">
-            <div class="background-image-holder image" :style="{'background-image': 'url(' + accessors.LogoUrl(item)+ ')'}"></div>
+        <div class="background-image-wrapper" :style="calculateHeight()" v-if="accessors.LogoUrl(item)">
+            <div class="background-image-holder image" :style="{'background-image': 'url(' + accessors.LogoUrl(item)+ ')' + (accessors.PlaceHolderUrl ? (',url(' + require('@/assets/images/placeholder.png') +')') : '')}"></div>
+        </div>
+        <div :style="calculateHeight()" v-else>
+            <slot name="imageUnavailable"></slot>
         </div>
         <div class="info">
             <slot name="title"></slot>

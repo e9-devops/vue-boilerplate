@@ -1,5 +1,5 @@
 <template>
-    <div v-if="model">
+    <div v-if="model && data" autocomplete="off">
         <slot :invalid="invalid" :errors="errors"></slot>
     </div>
 </template>
@@ -7,7 +7,7 @@
 <script>
 export default {
     name: 'FormFor',
-    props: ['displayMode', 'modelName', 'for'],
+    props: ['displayMode', 'modelName', 'data'],
     data() {
         return {
             model: null,

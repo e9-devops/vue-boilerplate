@@ -4,7 +4,7 @@
             <div class="stepper-item-bar" :class="{'completed': step.index <= current}">
                 <div class="stepper-item-bar-number"></div>
             </div>
-            <span class="stepper-item-name" v-text="step.name"></span>
+            <span class="stepper-item-name">\{{ step.name }}</span>
         </div>
     </div>
 </template>

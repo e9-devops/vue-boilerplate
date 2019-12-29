@@ -5,8 +5,8 @@
             <input :min="minValue" :max="maxValue" v-model="rangeValue[0]" type="range">
             <input :min="minValue" :max="maxValue" v-model="rangeValue[1]" type="range">
             <div class="range-values">
-                <span class="float-left mt16" v-text="rangeValue[0]"></span>
-                <span class="float-right mt16" v-text="rangeValue[1]"></span>
+                <span class="float-left mt16">\{ rangeValue[0] }}</span>
+                <span class="float-right mt16">\{{ rangeValue[1] }}</span>
             </div>
         </div>
     </div>

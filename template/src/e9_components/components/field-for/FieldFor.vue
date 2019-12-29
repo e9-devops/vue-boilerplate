@@ -1,151 +1,159 @@
 <template>
     <div class="form-group">
-        <component :is="component" :options="options" :value="value" @updateValue="sendValue"
-                   :display-mode="$parent.displayMode" :property="property"></component>
+        <component :is="component" :options="{...$props}" :value="value" @updateValue="sendValue"
+            :display-mode="$parent.displayMode" :property="property" :select-from="selectFrom"></component>
         <p class="validation-message" v-if="property && invalid && $parent.displayMode !== 'VIEW'">\{{ validationMessage }}</p>
     </div>
 </template>
 
 <script>
-    export default {
-        name: 'FieldFor',
-        props: [
-            'field',
-            'min',
-            'max',
-            'type',
-            'value',
-            'label',
-            'required',
-            'tabIndex',
-            'placeholder',
-            'customClass',
-            'onChangeEvent',
-            'rows',
-            'disabled',
-            'selectFrom',
-            'displayField',
-            'searchable',
-            'multiple'
-        ],
-        data() {
-            return {
-                options: {},
-                component: null,
-                property: {},
-                error: '',
-                invalid: false
-            };
-        },
-        methods: {
-            sendValue(valueObj) {
-                // Model service way
-                if (this.property.name) {
-                    this.property.value = valueObj.value;
-                    this.$parent.for[this.property.name] = valueObj.value;
-                    this.invalid = valueObj.$invalid;
-                    this.error = valueObj.$error;
-                    let found = this.$parent.errors.findIndex(err => err.name === this.property.name);
+export default {
+    name: 'FieldFor',
+    props: [
+        'field',
+        'min',
+        'max',
+        'type',
+        'value',
+        'label',
+        'required',
+        'tabIndex',
+        'placeholder',
+        'customClass',
+        'rows',
+        'disabled',
+        'selectFrom',
+        'displayField',
+        'searchable',
+        'multiple',
+        'calendarConfig',
+        'phone'
+    ],
+    data() {
+        return {
+            component: null,
+            property: {},
+            error: '',
+            invalid: false
+        };
+    },
+    methods: {
+        sendValue(valueObj) {
+            // Model service way
+            if (this.property.name) {
+                this.property.value = valueObj.value;
+                this.$parent.data[this.property.name] = valueObj.value;
+                this.invalid = valueObj.$invalid;
+                this.error = valueObj.$error;
+                let found = this.$parent.errors.findIndex(err => err.name === this.property.name);
+                if (found > -1) {
+                    this.$parent.errors.splice(found,1);
+                }
+                if (this.invalid) {
+                    this.$parent.errors.push({
+                        name: this.property.name,
+                        error: valueObj.$error
+                    });
+                }
+
+                // Check for subFormFor
+                if (this.$parent.$parent && this.$parent.$parent.errors) {
+                    let found = this.$parent.$parent.errors.findIndex(err => err.name === this.property.name);
                     if (found > -1) {
-                        this.$parent.errors.splice(found,1);
+                        this.$parent.$parent.errors.splice(found,1);
                     }
                     if (this.invalid) {
-                        this.$parent.errors.push({
+                        this.$parent.$parent.errors.push({
                             name: this.property.name,
                             error: valueObj.$error
                         });
                     }
-
-                    // Check for subFormFor
-                    if (this.$parent.$parent && this.$parent.$parent.errors) {
-                        let found = this.$parent.$parent.errors.findIndex(err => err.name === this.property.name);
-                        if (found > -1) {
-                            this.$parent.$parent.errors.splice(found,1);
-                        }
-                        if (this.invalid) {
-                            this.$parent.$parent.errors.push({
-                                name: this.property.name,
-                                error: valueObj.$error
-                            });
-                        }
-                        this.$parent.$parent.invalid = this.$parent.$parent.errors.length !== 0;
-                    } else
-                        this.$parent.invalid = this.$parent.errors.length !== 0;
-                } else {
-                    // if done through custom way
-                    this.$emit('update:value', valueObj.value);
-                }
-            },
-            // Custom Way
-            loadFieldComponentFromType() {
-                return () => import('./' + this.type + 'Field.vue');
-            },
-            // Model service way
-            loadFieldComponentFromModel() {
-                if (this.property.type.name === 'String') {
-                    if (this.property.textarea) return () => import('./TextareaField.vue');
-                    if (this.property.enum) return () => import('./SelectField.vue');
-                    return () => import('./TextField.vue');
-                } else if (this.property.type.name === 'Number') {
-                    return () => import('./NumberField.vue');
-                } else if (this.property.type.name === 'Boolean') {
-                    return () => import('./BooleanField.vue');
-                } else if (this.property.type.name === 'Date' || this.property.type.name === 'moment') {
-                    return () => import('./DateField.vue');
-                }
+                    this.$parent.$parent.invalid = this.$parent.$parent.errors.length !== 0;
+                } else
+                    this.$parent.invalid = this.$parent.errors.length !== 0;
+                this.$emit('changed',this.property.value);
+            } else {
+                // if done through custom way
+                this.$emit('update:value', valueObj.value);
             }
         },
-        computed: {
-            validationMessage() {
-                let errMsg = '';
-                if (!this.error)
-                    return '';
-                switch (this.error) {
-                    case 'email':{
-                        errMsg = 'Provided email is incorrect';
-                        break;
-                    }
-                    case 'length':{
-                        errMsg = 'Length of characters exceeds the allowed limit of ' + this.property.maxlength;
-                        break;
-                    }
-                    case 'required':{
-                        errMsg = this.property.name + ' field is a required field';
-                        break;
-                    }
-                    case 'regex': {
-                        errMsg = this.property.name + ' is not in the correct format';
-                        break;
-                    }
-                    case 'min': {
-                        errMsg = this.property.name + ' must be above ' + (this.property.min - 1);
-                        break;
-                    }
-                    case 'max': {
-                        errMsg = this.property.name + ' must be below ' + (this.property.max - 1);
-                        break;
-                    }
-                    default: {
-                        errMsg = this.property.name + ' is incorrect';
-                    }
-                }
-                return errMsg;
-            }
+        // Custom Way
+        loadFieldComponentFromType() {
+            return () => import('./' + this.type + 'Field.vue');
         },
-        created() {
-            // Custom way
-            if (this.type) {
-                this.component = this.loadFieldComponentFromType();
-            } else if (this.$parent.schema) {
-                // Model service way
-                this.property = this.$parent.schema[this.field];
-                this.property.name = this.field;
-                this.property.value = this.$parent.$props.for[this.field];
-                this.component = this.loadFieldComponentFromModel();
+        // Model service way
+        loadFieldComponentFromModel() {
+            if (this.property.type.name === 'String') {
+                if (this.property.textarea || this.rows) return () => import('./TextareaField.vue');
+                else if (this.selectFrom && this.multiple) return () => import('./MultiSelectField');
+                else if (this.property.enum || this.selectFrom) return () => import('./SelectField.vue');
+                else if (this.property.phone || this.phone) return () => import('./Phone.vue');
+                return () => import('./TextField.vue');
+            } else if (this.property.type.name === 'Number') {
+                return () => import('./NumberField.vue');
+            } else if (this.property.type.name === 'Boolean') {
+                return () => import('./BooleanField.vue');
+            } else if (this.property.type.name === 'Date' || this.property.type.name === 'moment') {
+                return () => import('./DateField.vue');
             }
-            this.options = {...this.$props};
         }
-    };
+    },
+    computed: {
+        validationMessage() {
+            let errMsg = '';
+            if (!this.error)
+                return '';
+            switch (this.error) {
+            case 'email':{
+                errMsg = 'Provided email is incorrect';
+                break;
+            }
+            case 'length':{
+                errMsg = 'Length of characters exceeds the allowed limit of ' + this.property.maxlength;
+                break;
+            }
+            case 'required':{
+                errMsg = (this.label || this.property.name) + ' field is a required field';
+                break;
+            }
+            case 'regex': {
+                errMsg = (this.label || this.property.name) + ' is not in the correct format';
+                break;
+            }
+            case 'min': {
+                errMsg = (this.label || this.property.name) + ' must be above ' + (this.property.min - 1);
+                break;
+            }
+            case 'max': {
+                errMsg = (this.label || this.property.name) + ' must be below ' + (this.property.max - 1);
+                break;
+            }
+            default: {
+                errMsg = (this.label || this.property.name) + ' is incorrect';
+            }
+            }
+            return errMsg;
+        }
+    },
+    created() {
+        // Custom way
+        if (this.type) {
+            this.component = this.loadFieldComponentFromType();
+        } else if (this.$parent.schema) {
+            // Model service way
+            let prop = this.$parent.schema[this.field];
+            if (prop === undefined) {
+                console.error(`${this.field} is not available in the schema. Please add it to your model.js in order to show a field.`);
+                return;
+            }
+            prop.name = this.field;
+            prop.value = this.$parent.$props.data ? this.$parent.$props.data[this.field] : '-';
+            this.property = JSON.parse(JSON.stringify(prop));
+            this.property.type = prop.type;
+            this.component = this.loadFieldComponentFromModel();
+        }
+    }
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

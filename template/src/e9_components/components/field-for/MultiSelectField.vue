@@ -3,18 +3,18 @@
         <label class="control-label" :for="options.label || property.name" v-text="options.label || property.name"></label>
         <br class="clearfix">
         <div v-if="displayMode === 'EDIT' || displayMode === 'CREATE'">
-            <div v-if="typeof items[0] === 'object'" class="single">
+            <div v-if="options.multiple && typeof items[0] === 'object'" class="multiple">
                 <multiselect v-model="selected"
                     :options="items"
-                    open-direction="bottom"
+                    :multiple="true"
                     track-by="_id"
                     :label="displayField || 'Name'"
-                    :searchable="!!options.searchable"
                     :close-on-select="true"
+                    :clear-on-select="true"
+                    :preserve-search="false"
                     select-label=""
                     deselect-label=""
                     :hide-selected="true"
-                    :disabled="options.disabled"
                     @close="handler">
                     <template slot="option" slot-scope="props">
                         <div class="image" v-if="props.option._ImageUrl" :style="{'background-image': 'url(' + props.option._ImageUrl + ')'}"></div>
@@ -29,29 +29,15 @@
                     </template>
                 </multiselect>
             </div>
-            <div v-else class="single">
-                <multiselect v-model="selected"
-                    :options="items"
-                    open-direction="bottom"
-                    :searchable="!!options.searchable"
-                    :close-on-select="true"
-                    select-label=""
-                    deselect-label=""
-                    :disabled="options.disabled"
-                    :hide-selected="true"
-                    @close="handler">
-                </multiselect>
-            </div>
         </div>
-        <p class="form-control-static" v-else-if="items && displayMode === 'VIEW' && typeof items[0] === 'string'">\{{ clonedValue.value }}</p>
-        <p class="form-control-static" v-else-if="items && displayMode === 'VIEW' && typeof items[0] === 'object'">\{{ displayFromObject }}</p>
+        <p class="form-control-static" v-else-if="selectFrom && displayMode === 'VIEW' && typeof selectFrom[0] === 'object'" v-text="displayFromObject"></p>
     </div>
 </template>
 
 <script>
 import Multiselect from 'vue-multiselect';
 export default {
-    name: 'SelectField',
+    name: 'MultiSelectField',
     props: {
         options: {
             type: Object
@@ -80,6 +66,9 @@ export default {
         };
     },
     methods: {
+        addTag(newTag) {
+            this.clonedValue.value.push(newTag);
+        },
         handler() {
             this.clonedValue.value = this.selected && this.selected['_id'] ? this.selected['_id'] : this.selected;
             this.validate();
@@ -125,22 +114,12 @@ export default {
     },
     created() {
         this.displayField = this.options.displayField;
-        if (this.selectFrom && this.selectFrom.length && typeof this.selectFrom[0] === 'object') { // check if any external objects exist in the list  via select from
-            if (this.value) {
-                this.selected = this.selectFrom.find(item => item._id === this.value);
-            } else if (this.property && this.property.value) {
-                this.selected = this.selectFrom.find(item => item._id === this.property.value);
-            } else {
-                this.selected = undefined;
-            }
-        } else { // else treat the value as string
-            if (this.value) {
-                this.selected = this.value;
-            } else if (this.property && this.property.value) {
-                this.selected = this.property.value;
-            } else {
-                this.selected = undefined;
-            }
+        if (this.value) {
+            this.selected = Array.isArray(this.value) ? this.value : [this.value];
+        } else if (this.property && this.property.value) {
+            this.selected = Array.isArray(this.value) ? this.property.value : [this.property.value];
+        } else {
+            this.selected = [];
         }
         this.handler();
     }
@@ -150,3 +129,4 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 </style>
+

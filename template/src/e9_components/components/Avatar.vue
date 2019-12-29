@@ -1,7 +1,7 @@
 <template>
     <div class="avatar" :style="dimensions">
         <div class="background-image-holder" :style="color">
-            <p class="white" ref="container" v-text="text"></p>
+            <p class="white" ref="container">\{{ text }}</p>
         </div>
     </div>
 </template>
