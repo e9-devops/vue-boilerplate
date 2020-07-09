@@ -1,1 +1,1 @@
-window.endpoint = process.env.ENDPOINT
+window.endpoint = process.env.ENDPOINT;
