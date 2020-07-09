@@ -1,7 +1,6 @@
 # vue boilerplate for multi module projects
 
 > A full-featured Webpack setup with hot-reload, lint-on-save, commit verification & scss loader.
-> To read documentation please visit https://components9.firebaseapp.com
 
 ## Usage
 
@@ -13,7 +12,7 @@ $ npm install -g @vue/cli-init
 $ npm install -g vue-cli
 $ vue init e9-devops/vue-boilerplate .
 $ npm install
-$ npm run dev
+$ npm run serve
 ```
 
 The development server will run on port 8080 by default. If that port is already in use on your machine, the next free port will be used.

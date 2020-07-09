@@ -75,12 +75,12 @@ module.exports = {
 
     if (data.autoInstall) {
       installDependencies(cwd, 'npm', green)
-        .then(() => {
-          printMessage(data, green)
-        })
-        .catch(e => {
-          console.log(chalk.red('Error:'), e)
-        })
+          .then(() => {
+            printMessage(data, green)
+          })
+          .catch(e => {
+            console.log(chalk.red('Error:'), e)
+          })
     } else {
       printMessage(data, chalk)
     }
