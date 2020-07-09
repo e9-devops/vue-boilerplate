@@ -1,3 +1,4 @@
+import {store} from '../store';
 import Dashboard from './Dashboard';
 
 export default [{
@@ -5,3 +6,9 @@ export default [{
     component: Dashboard,
     name: 'Dashboard'
 }];
+
+store.state['sideBarModule'].menu[0].menuItems.push({
+    name: 'Dashboard',
+    path: '/dashboard',
+    icon: 'dashboard'
+});
