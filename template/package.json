@@ -79,7 +79,7 @@
       "vue-cli-service lint",
       "git add"
     ],
-    "config.js": [
+    ".env.*": [
       "node scripts/verifyUntrackable.js"
     ]
   },

@@ -5,7 +5,7 @@ console.log(process.argv);
 if (process.argv[0]) {
     console.error(
         `  ${chalk.bgRed.white(' ERROR ')} ${chalk.red(
-            'config.js must not be trackable.'
+            '.env files must not be trackable.'
         )}\n\n`
     );
     process.exit(1);

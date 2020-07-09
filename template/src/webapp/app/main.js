@@ -1,10 +1,11 @@
-import Vue from 'vue';
-import App from './App';
-import '@/plugins/vue-cookies';
-import router from '@/webapp/app/router';
+import '@/config';
 import '@/plugins';
+import '@/plugins/vue-cookies';
 import '@/scss/style.scss';
 import {store} from '@/webapp/app/store';
+import App from './App';
+import router from '@/webapp/app/router';
+import Vue from 'vue';
 
 import ApiService from '@/services/ApiService';
 
