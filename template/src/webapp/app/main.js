@@ -12,6 +12,7 @@ import ApiService from '@/services/ApiService';
 Vue.config.productionTip = false;
 
 if (Vue.$cookies.get('token')) {
+    Vue.prototype.momemt = require('moment');
     Vue.prototype.ENDPOINT = window.endpoint;
     ApiService.init();
     window.$ = require('jquery');
